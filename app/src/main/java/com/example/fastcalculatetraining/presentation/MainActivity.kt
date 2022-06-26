@@ -1,7 +1,8 @@
-package com.example.fastcalculatetraining
+package com.example.fastcalculatetraining.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.fastcalculatetraining.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
