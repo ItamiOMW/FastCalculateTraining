@@ -1,4 +1,4 @@
-package com.example.fastcalculatetraining.data.repositoryImpl
+package com.example.fastcalculatetraining.data.repository_impl
 
 import com.example.fastcalculatetraining.domain.models.GameSettings
 import com.example.fastcalculatetraining.domain.models.Level
