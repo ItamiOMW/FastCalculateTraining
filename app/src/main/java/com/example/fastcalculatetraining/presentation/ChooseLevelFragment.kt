@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.fastcalculatetraining.R
 import com.example.fastcalculatetraining.databinding.FragmentChooseLevelBinding
 import com.example.fastcalculatetraining.domain.models.GameResult
@@ -46,16 +47,14 @@ class ChooseLevelFragment : Fragment() {
     }
 
     private fun launchGameFragment(level: Level) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, GameFragment.newInstance(level))
-            .addToBackStack(GameFragment.NAME_FOR_BACKSTACK)
-            .commit()
+        findNavController().navigate(ChooseLevelFragmentDirections.actionChooseLevelFragmentToGameFragment(level))
     }
 
-    companion object {
 
-        fun newInstance(): ChooseLevelFragment {
-            return ChooseLevelFragment()
-        }
+companion object {
+
+    fun newInstance(): ChooseLevelFragment {
+        return ChooseLevelFragment()
     }
+}
 }

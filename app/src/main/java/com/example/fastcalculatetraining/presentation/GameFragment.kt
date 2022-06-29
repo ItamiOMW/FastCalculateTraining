@@ -11,6 +11,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.*
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.fastcalculatetraining.R
 import com.example.fastcalculatetraining.databinding.FragmentGameBinding
 import com.example.fastcalculatetraining.domain.models.GameResult
@@ -33,12 +35,8 @@ class GameFragment : Fragment() {
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        parseArgs()
-    }
+    private val args by navArgs<GameFragmentArgs>()
 
-    private lateinit var level: Level
     private val options by lazy {
         listOf(
             binding.tvOption1,
@@ -50,7 +48,10 @@ class GameFragment : Fragment() {
         )
     }
     private val viewModel by lazy {
-        ViewModelFactory(requireActivity().application, level).create(GameViewModel::class.java)
+        ViewModelFactory(
+            requireActivity().application,
+            args.level
+        ).create(GameViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,10 +103,6 @@ class GameFragment : Fragment() {
         }
     }
 
-    private fun parseArgs() {
-        level = requireArguments().get(KEY_LEVEL) as Level
-    }
-
     private fun setRightColor(boolean: Boolean): Int {
         return if (boolean) {
             Color.GREEN
@@ -115,10 +112,11 @@ class GameFragment : Fragment() {
     }
 
     private fun launchGameFinishedFragment(gameResult: GameResult) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, GameFinishedFragment.newInstance(gameResult))
-            .addToBackStack(null)
-            .commit()
+        findNavController().navigate(
+            GameFragmentDirections.actionGameFragmentToGameFinishedFragment(
+                gameResult
+            )
+        )
     }
 
     companion object {
@@ -133,5 +131,6 @@ class GameFragment : Fragment() {
                 }
             }
         }
+
     }
 }

@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.fastcalculatetraining.R
 import com.example.fastcalculatetraining.databinding.FragmentGameFinishedBinding
 import com.example.fastcalculatetraining.domain.models.GameResult
@@ -26,12 +28,7 @@ class GameFinishedFragment : Fragment() {
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        parseArgs()
-    }
-
-    private lateinit var gameResult: GameResult
+    private val args by navArgs<GameFinishedFragmentArgs>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,15 +40,15 @@ class GameFinishedFragment : Fragment() {
         binding.emojiResult.setImageResource(setImage())
         binding.tvRequiredAnswers.text = String.format(
             context?.resources?.getString(R.string.required_score).toString(),
-            gameResult.gameSettings.minCountOfRightAnswers
+            args.gameResult.gameSettings.minCountOfRightAnswers
         )
         binding.tvRequiredPercentage.text = String.format(
             context?.resources?.getString(R.string.required_percentage).toString(),
-            gameResult.gameSettings.minPercentOfRightAnswers
+            args.gameResult.gameSettings.minPercentOfRightAnswers
         )
         binding.tvScoreAnswers.text = String.format(
             context?.resources?.getString(R.string.score_answers).toString(),
-            gameResult.countOfRightAnswers.toString()
+            args.gameResult.countOfRightAnswers.toString()
         )
         binding.tvScorePercentage.text = String.format(
             context?.resources?.getString(R.string.score_percentage).toString(),
@@ -60,14 +57,14 @@ class GameFinishedFragment : Fragment() {
     }
 
     private fun countPercentage(): Int {
-        if (gameResult.countOfRightAnswers == 0) {
+        if (args.gameResult.countOfRightAnswers == 0) {
             return 0
         }
-        return ((gameResult.countOfQuestions / gameResult.countOfRightAnswers.toDouble()) * 100).toInt()
+        return ((args.gameResult.countOfQuestions / args.gameResult.countOfRightAnswers.toDouble()) * 100).toInt()
     }
 
     private fun setImage(): Int {
-        return if (gameResult.winner) {
+        return if (args.gameResult.winner) {
             R.drawable.ic_happy_smile
         } else {
             R.drawable.ic_sad_smile
@@ -78,24 +75,10 @@ class GameFinishedFragment : Fragment() {
         binding.buttonRetry.setOnClickListener {
             returnToChooseLevel()
         }
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    returnToChooseLevel()
-                }
-            })
     }
 
     private fun returnToChooseLevel() {
-        requireActivity().supportFragmentManager.popBackStack(
-            GameFragment.NAME_FOR_BACKSTACK,
-            FragmentManager.POP_BACK_STACK_INCLUSIVE
-        )
-    }
-
-    private fun parseArgs() {
-        gameResult = requireArguments().get(KEY_GAME_RESULT) as GameResult
+        findNavController().popBackStack()
     }
 
     companion object {
