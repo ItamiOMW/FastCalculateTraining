@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.fastcalculatetraining.R
 import com.example.fastcalculatetraining.databinding.FragmentGameFinishedBinding
 import com.example.fastcalculatetraining.domain.models.GameResult
 
@@ -34,6 +35,46 @@ class GameFinishedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setToBackListeners()
+        setValues()
+    }
+
+    private fun setValues() {
+        binding.emojiResult.setImageResource(setImage())
+        binding.tvRequiredAnswers.text = String.format(
+            context?.resources?.getString(R.string.required_score).toString(),
+            gameResult.gameSettings.minCountOfRightAnswers
+        )
+        binding.tvRequiredPercentage.text = String.format(
+            context?.resources?.getString(R.string.required_percentage).toString(),
+            gameResult.gameSettings.minPercentOfRightAnswers
+        )
+        binding.tvScoreAnswers.text = String.format(
+            context?.resources?.getString(R.string.score_answers).toString(),
+            gameResult.countOfRightAnswers.toString()
+        )
+        binding.tvScorePercentage.text = String.format(
+            context?.resources?.getString(R.string.score_percentage).toString(),
+            countPercentage().toString()
+        )
+    }
+
+    private fun countPercentage(): Int {
+        if (gameResult.countOfRightAnswers == 0) {
+            return 0
+        }
+        return ((gameResult.countOfQuestions / gameResult.countOfRightAnswers.toDouble()) * 100).toInt()
+    }
+
+    private fun setImage(): Int {
+        return if (gameResult.winner) {
+            R.drawable.ic_happy_smile
+        } else {
+            R.drawable.ic_sad_smile
+        }
+    }
+
+    private fun setToBackListeners() {
         binding.buttonRetry.setOnClickListener {
             returnToChooseLevel()
         }

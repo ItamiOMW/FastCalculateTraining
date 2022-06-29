@@ -14,6 +14,7 @@ class RepositoryImpl: Repository {
         val sum = Random.nextInt(MIN_SUM_VALUE, maxSumValue + 1)
         val visibleNumber = Random.nextInt(MIN_ANSWER_VALUE, sum)
         val options = HashSet<Int>()
+        options.add(sum - visibleNumber)
         val from = max(visibleNumber - countOfOptions, MIN_ANSWER_VALUE)
         val to = min(maxSumValue, visibleNumber + countOfOptions)
         while (options.size < countOfOptions) {
