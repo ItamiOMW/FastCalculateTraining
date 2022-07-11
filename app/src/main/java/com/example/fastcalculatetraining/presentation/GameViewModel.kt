@@ -2,20 +2,23 @@ package com.example.fastcalculatetraining.presentation
 
 import android.app.Application
 import android.os.CountDownTimer
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.fastcalculatetraining.R
-import com.example.fastcalculatetraining.data.repository_impl.RepositoryImpl
 import com.example.fastcalculatetraining.domain.models.GameResult
 import com.example.fastcalculatetraining.domain.models.GameSettings
 import com.example.fastcalculatetraining.domain.models.Level
 import com.example.fastcalculatetraining.domain.models.Question
 import com.example.fastcalculatetraining.domain.usecases.GenerateQuestionUseCase
 import com.example.fastcalculatetraining.domain.usecases.GetGameSettingsUseCase
+import javax.inject.Inject
 
-class GameViewModel(private val application: Application, private val level: Level) : ViewModel() {
+class GameViewModel @Inject constructor(
+    private val application: Application,
+    private val generateQuestionUseCase: GenerateQuestionUseCase,
+    private val getGameSettingsUseCase: GetGameSettingsUseCase
+) : ViewModel() {
 
     private lateinit var gameSettings: GameSettings
     private var timer: CountDownTimer? = null
@@ -52,17 +55,8 @@ class GameViewModel(private val application: Application, private val level: Lev
     val gameResult: LiveData<GameResult>
         get() = _gameResult
 
-    private val repository = RepositoryImpl()
-
-    private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
-    private val getGameSettingsUseCase = GetGameSettingsUseCase(repository)
-
     private var countOfRightAnswers = 0
     private var countOfQuestions = 0
-
-    init {
-        start()
-    }
 
     fun chooseAnswer(answer: Int) {
         checkAnswer(answer)
@@ -70,8 +64,8 @@ class GameViewModel(private val application: Application, private val level: Lev
         generateQuestion()
     }
 
-    private fun start() {
-        getGameSettings()
+    fun start(level: Level) {
+        getGameSettings(level)
         startTimer()
         generateQuestion()
         setProgressAnswer()
@@ -86,7 +80,7 @@ class GameViewModel(private val application: Application, private val level: Lev
         )
     }
 
-    private fun getGameSettings() {
+    private fun getGameSettings(level: Level) {
         this.gameSettings = getGameSettingsUseCase(level)
         _minPercent.value = gameSettings.minPercentOfRightAnswers
     }

@@ -4,11 +4,12 @@ import com.example.fastcalculatetraining.domain.models.GameSettings
 import com.example.fastcalculatetraining.domain.models.Level
 import com.example.fastcalculatetraining.domain.models.Question
 import com.example.fastcalculatetraining.domain.repository.Repository
+import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-class RepositoryImpl: Repository {
+class RepositoryImpl @Inject constructor(): Repository {
 
     override fun generateQuestion(maxSumValue: Int, countOfOptions: Int): Question {
         val sum = Random.nextInt(MIN_SUM_VALUE, maxSumValue + 1)
