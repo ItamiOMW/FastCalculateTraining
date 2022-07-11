@@ -1,5 +1,6 @@
 package com.example.fastcalculatetraining.presentation
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -15,10 +16,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.fastcalculatetraining.R
 import com.example.fastcalculatetraining.databinding.FragmentGameBinding
+import com.example.fastcalculatetraining.di.GameApp
 import com.example.fastcalculatetraining.domain.models.GameResult
 import com.example.fastcalculatetraining.domain.models.GameSettings
 import com.example.fastcalculatetraining.domain.models.Level
 import com.example.fastcalculatetraining.domain.models.Question
+import javax.inject.Inject
 
 class GameFragment : Fragment() {
 
@@ -47,15 +50,25 @@ class GameFragment : Fragment() {
             binding.tvOption6
         )
     }
-    private val viewModel by lazy {
-        ViewModelFactory(
-            requireActivity().application,
-            args.level
-        ).create(GameViewModel::class.java)
+
+    override fun onAttach(context: Context) {
+        component.inject(this)
+        super.onAttach(context)
+    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private lateinit var viewModel: GameViewModel
+
+    private val component by lazy {
+        (requireActivity().application as GameApp).component
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProvider(this, viewModelFactory)[GameViewModel::class.java]
+        viewModel.start(args.level)
         setObservers()
         setClickListenersToOptions()
     }
@@ -122,15 +135,6 @@ class GameFragment : Fragment() {
     companion object {
 
         private const val KEY_LEVEL = "level"
-        const val NAME_FOR_BACKSTACK = "gameFragment"
-
-        fun newInstance(level: Level): GameFragment {
-            return GameFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(KEY_LEVEL, level)
-                }
-            }
-        }
 
     }
 }
